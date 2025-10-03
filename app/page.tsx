@@ -15,8 +15,18 @@ export default function Home() {
         
         <ChessGame />
         
-        <div className="mt-8 text-center text-gray-400 text-sm">
+        <div className="mt-8 text-center text-gray-400 text-sm space-y-2">
           <p>Powered by Cosmic AI | You play as White, AI plays as Black</p>
+          <p>
+            <a 
+              href="https://www.cosmicjs.com/community/projects/ai-chess-game"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-300 transition-colors underline"
+            >
+              Clone this project on Cosmic
+            </a>
+          </p>
         </div>
       </div>
     </main>
