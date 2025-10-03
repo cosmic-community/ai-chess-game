@@ -113,7 +113,7 @@ export default function ChessBoard({
 
   return (
     <div className="bg-gray-800 p-4 rounded-lg shadow-2xl">
-      <div className="grid grid-cols-8 gap-0 aspect-square max-w-2xl mx-auto">
+      <div className="grid grid-cols-8 gap-0 w-full max-w-2xl mx-auto" style={{ aspectRatio: '1/1' }}>
         {boardState.map(({ square, piece }) => {
           const isSelected = square === selectedSquare;
           const isValidMove = isValidSquare(square) && validMoves.includes(square);
@@ -129,6 +129,7 @@ export default function ChessBoard({
                 ${isDragging ? 'opacity-50' : ''}
                 transition-all duration-150
               `}
+              style={{ aspectRatio: '1/1' }}
               onClick={() => handleSquareClick(square)}
               onDragOver={(e) => {
                 e.preventDefault();
