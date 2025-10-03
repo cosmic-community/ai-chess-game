@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { Chess } from 'chess.js';
+import type { Chess, Square } from 'chess.js';
 import type { GameState } from '@/types';
 import { getBoardState, getPieceSymbol } from '@/lib/chess-utils';
 
@@ -27,7 +27,7 @@ export default function ChessBoard({
   
   // Get valid moves for selected square
   const getValidMoves = (square: string) => {
-    const moves = chess.moves({ square, verbose: true });
+    const moves = chess.moves({ square: square as Square, verbose: true });
     return moves.map(move => move.to);
   };
 
