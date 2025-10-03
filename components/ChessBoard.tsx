@@ -8,9 +8,9 @@ import { getBoardState, getPieceSymbol } from '@/lib/chess-utils';
 interface ChessBoardProps {
   chess: Chess;
   gameState: GameState;
-  onMove: (from: string, to: string) => Promise<boolean>;
-  selectedSquare: string | null;
-  onSelectSquare: (square: string | null) => void;
+  onMove: (from: Square, to: Square) => Promise<boolean>;
+  selectedSquare: Square | null;
+  onSelectSquare: (square: Square | null) => void;
   isAIThinking: boolean;
 }
 
@@ -22,12 +22,12 @@ export default function ChessBoard({
   onSelectSquare,
   isAIThinking,
 }: ChessBoardProps) {
-  const [draggedPiece, setDraggedPiece] = useState<string | null>(null);
+  const [draggedPiece, setDraggedPiece] = useState<Square | null>(null);
   const boardState = getBoardState(chess);
   
   // Get valid moves for selected square
-  const getValidMoves = (square: string) => {
-    const moves = chess.moves({ square: square as Square, verbose: true });
+  const getValidMoves = (square: Square) => {
+    const moves = chess.moves({ square, verbose: true });
     return moves.map(move => move.to);
   };
 
@@ -44,20 +44,20 @@ export default function ChessBoard({
     if (selectedSquare) {
       if (validMoves.includes(square)) {
         // Make the move
-        const success = await onMove(selectedSquare, square);
+        const success = await onMove(selectedSquare, square as Square);
         if (!success) {
           onSelectSquare(null);
         }
       } else if (piece && piece.color === 'w') {
         // Select different piece
-        onSelectSquare(square);
+        onSelectSquare(square as Square);
       } else {
         // Deselect
         onSelectSquare(null);
       }
     } else if (piece && piece.color === 'w') {
       // Select a piece
-      onSelectSquare(square);
+      onSelectSquare(square as Square);
     }
   };
 
@@ -68,8 +68,8 @@ export default function ChessBoard({
     
     const piece = boardState.find(s => s.square === square)?.piece;
     if (piece && piece.color === 'w') {
-      setDraggedPiece(square);
-      onSelectSquare(square);
+      setDraggedPiece(square as Square);
+      onSelectSquare(square as Square);
     }
   };
 
@@ -80,7 +80,7 @@ export default function ChessBoard({
   const handleDrop = async (square: string) => {
     if (!draggedPiece) return;
     
-    await onMove(draggedPiece, square);
+    await onMove(draggedPiece, square as Square);
     setDraggedPiece(null);
   };
 

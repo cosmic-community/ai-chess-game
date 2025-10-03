@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Chess } from 'chess.js';
+import { Chess, Square } from 'chess.js';
 import ChessBoard from './ChessBoard';
 import GameInfo from './GameInfo';
 import type { ChessMove, GameState } from '@/types';
@@ -12,10 +12,10 @@ export default function ChessGame() {
   const [gameState, setGameState] = useState<GameState>(() => getGameState(chess, []));
   const [moveHistory, setMoveHistory] = useState<ChessMove[]>([]);
   const [isAIThinking, setIsAIThinking] = useState(false);
-  const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
+  const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
 
   // Handle player move
-  const handleMove = async (from: string, to: string) => {
+  const handleMove = async (from: Square, to: Square) => {
     try {
       // Attempt the move
       const move = chess.move({ from, to, promotion: 'q' });
@@ -74,8 +74,8 @@ export default function ChessGame() {
 
       // Parse the move string (e.g., "e7e5")
       if (aiMoveString && aiMoveString.length >= 4) {
-        const from = aiMoveString.substring(0, 2);
-        const to = aiMoveString.substring(2, 4);
+        const from = aiMoveString.substring(0, 2) as Square;
+        const to = aiMoveString.substring(2, 4) as Square;
         const promotion = aiMoveString.length > 4 ? aiMoveString[4] : undefined;
 
         const move = chess.move({ from, to, promotion });
