@@ -14,6 +14,11 @@ interface ChessBoardProps {
   isAIThinking: boolean;
 }
 
+// Type guard to validate if a string is a valid Square
+function isValidSquare(square: string): square is Square {
+  return /^[a-h][1-8]$/.test(square);
+}
+
 export default function ChessBoard({
   chess,
   gameState,
@@ -26,7 +31,7 @@ export default function ChessBoard({
   const boardState = getBoardState(chess);
   
   // Get valid moves for selected square
-  const getValidMoves = (square: Square) => {
+  const getValidMoves = (square: Square): Square[] => {
     const moves = chess.moves({ square, verbose: true });
     return moves.map(move => move.to);
   };
@@ -37,6 +42,7 @@ export default function ChessBoard({
   const handleSquareClick = async (square: string) => {
     if (isAIThinking || gameState.isGameOver) return;
     if (gameState.turn !== 'w') return; // Only allow moves on white's turn
+    if (!isValidSquare(square)) return; // Type guard
 
     const piece = boardState.find(s => s.square === square)?.piece;
 
@@ -44,20 +50,20 @@ export default function ChessBoard({
     if (selectedSquare) {
       if (validMoves.includes(square)) {
         // Make the move
-        const success = await onMove(selectedSquare, square as Square);
+        const success = await onMove(selectedSquare, square);
         if (!success) {
           onSelectSquare(null);
         }
       } else if (piece && piece.color === 'w') {
         // Select different piece
-        onSelectSquare(square as Square);
+        onSelectSquare(square);
       } else {
         // Deselect
         onSelectSquare(null);
       }
     } else if (piece && piece.color === 'w') {
       // Select a piece
-      onSelectSquare(square as Square);
+      onSelectSquare(square);
     }
   };
 
@@ -65,11 +71,12 @@ export default function ChessBoard({
   const handleDragStart = (square: string) => {
     if (isAIThinking || gameState.isGameOver) return;
     if (gameState.turn !== 'w') return;
+    if (!isValidSquare(square)) return; // Type guard
     
     const piece = boardState.find(s => s.square === square)?.piece;
     if (piece && piece.color === 'w') {
-      setDraggedPiece(square as Square);
-      onSelectSquare(square as Square);
+      setDraggedPiece(square);
+      onSelectSquare(square);
     }
   };
 
@@ -79,8 +86,9 @@ export default function ChessBoard({
 
   const handleDrop = async (square: string) => {
     if (!draggedPiece) return;
+    if (!isValidSquare(square)) return; // Type guard
     
-    await onMove(draggedPiece, square as Square);
+    await onMove(draggedPiece, square);
     setDraggedPiece(null);
   };
 
@@ -94,7 +102,8 @@ export default function ChessBoard({
       return 'bg-yellow-400';
     }
     
-    if (validMoves.includes(square)) {
+    // Type guard before checking validMoves
+    if (isValidSquare(square) && validMoves.includes(square)) {
       const hasPiece = boardState.find(s => s.square === square)?.piece;
       return hasPiece ? 'bg-red-300' : 'bg-green-300';
     }
@@ -107,7 +116,7 @@ export default function ChessBoard({
       <div className="grid grid-cols-8 gap-0 aspect-square max-w-2xl mx-auto">
         {boardState.map(({ square, piece }) => {
           const isSelected = square === selectedSquare;
-          const isValidMove = validMoves.includes(square);
+          const isValidMove = isValidSquare(square) && validMoves.includes(square);
           const isDragging = draggedPiece === square;
           
           return (
