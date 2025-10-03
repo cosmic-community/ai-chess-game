@@ -34,7 +34,7 @@ export default function ChessBoard({
   const validMoves = selectedSquare ? getValidMoves(selectedSquare) : [];
 
   // Handle square click
-  const handleSquareClick = async (square: Square) => {
+  const handleSquareClick = async (square: string) => {
     if (isAIThinking || gameState.isGameOver) return;
     if (gameState.turn !== 'w') return; // Only allow moves on white's turn
 
@@ -62,7 +62,7 @@ export default function ChessBoard({
   };
 
   // Drag handlers
-  const handleDragStart = (square: Square) => {
+  const handleDragStart = (square: string) => {
     if (isAIThinking || gameState.isGameOver) return;
     if (gameState.turn !== 'w') return;
     
@@ -77,7 +77,7 @@ export default function ChessBoard({
     setDraggedPiece(null);
   };
 
-  const handleDrop = async (square: Square) => {
+  const handleDrop = async (square: string) => {
     if (!draggedPiece) return;
     
     await onMove(draggedPiece, square);
@@ -120,7 +120,7 @@ export default function ChessBoard({
                 ${isDragging ? 'opacity-50' : ''}
                 transition-all duration-150
               `}
-              onClick={() => handleSquareClick(square as Square)}
+              onClick={() => handleSquareClick(square)}
               onDragOver={(e) => {
                 e.preventDefault();
                 if (isValidMove) {
@@ -133,7 +133,7 @@ export default function ChessBoard({
               onDrop={async (e) => {
                 e.preventDefault();
                 e.currentTarget.classList.remove('scale-105');
-                await handleDrop(square as Square);
+                await handleDrop(square);
               }}
             >
               {/* Square label */}
@@ -152,7 +152,7 @@ export default function ChessBoard({
               {piece && (
                 <div
                   draggable={piece.color === 'w' && !isAIThinking}
-                  onDragStart={() => handleDragStart(square as Square)}
+                  onDragStart={() => handleDragStart(square)}
                   onDragEnd={handleDragEnd}
                   className={`
                     text-5xl cursor-grab select-none
